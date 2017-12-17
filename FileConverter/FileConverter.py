@@ -8,8 +8,8 @@ import chardet
 
 def convert_file(filePath):
     if any([filePath.endswith(extension) for extension in '.h,.cpp,.hxx,.rc,.inl'.split(',')]):
-        with open(filePath, "rb") as EdcodingFile:
-            text = EncodingFile.read()
+        with open(filePath, "rb") as SrcFile:
+            text = SrcFile.read()
             enc = chardet.detect(text).get("encoding")
             if enc and enc.lower() != "utf-8":
                 try:
@@ -35,15 +35,15 @@ if __name__ == '__main__':
         path = sys.argv[1:][0]
     if os.path.isdir(path):
         last=path[-1]
-        if last.endwith('/'):
+        if last.endswith('/'):
             path = path
         else:
             path = path + "/"
         print (path)
         for (path, dirs, files) in os.walk(path):
             for file in files:
-                filePath = path + filePath
-                filePath = filePath.decode("utf-8")
+                filePath = path + file
+               # filePath = filePath.decode("utf-8")
                 convert_file(filePath)
     else:
         if os.path.isfile(path) :
