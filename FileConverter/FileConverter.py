@@ -3,31 +3,35 @@
 #!/usr/bin/env python
  
 import os
+import codecs
 import sys
 import chardet
 
 def convert_file(filePath):
     if any([filePath.endswith(extension) for extension in '.h,.cpp,.hxx,.rc,.inl'.split(',')]):
-        with open(filePath, "rb") as SrcFile:
-            text = SrcFile.read()
-            enc = chardet.detect(text).get("encoding")
-            if enc and enc.lower() != "utf-8":
+        try:
+
+            with codecs.open(filePath, "rb", "ansi") as SrcFile:
+
+                print(u"%s converting...." % filePath)
+
+                text = SrcFile.read()
+
                 try:
-                    text = text.decode(enc)
-                    text = text.encode("utf-8")
-                    with open(filePath, "wb") as DestFile:
+                    with codecs.open(filePath, "wb", "utf-8") as DestFile:
                         DestFile.write(text)
                         print(u"%s converted." % filePath)
                 except:
-                    print (u"Error in file name: filename contains russian chars.")
-            else:
-                print (u"File %s was in dest %s encoding" % (filePath, enc))
-            print ('-'*40)
+                    print(u"ERROR in converting.")
+        except:
+            print(u"ERROR in open.")
+
+        print ('-'*40)
 
 if __name__ == '__main__':
     if len(sys.argv[1:]) == 0:
         try:
-            path = raw_input(u"Input payh of file:")
+            path = raw_input(u"Input pah of file:")
         except KeyboardInterrupt:
             print( u"Input cancelled.")
             sys.exit(0)
@@ -42,7 +46,10 @@ if __name__ == '__main__':
         print (path)
         for (path, dirs, files) in os.walk(path):
             for file in files:
-                filePath = path + file
+                if path.endswith('/'):
+                    filePath = path + file
+                else:
+                    filePath = path + '/' + file
                # filePath = filePath.decode("utf-8")
                 convert_file(filePath)
     else:
